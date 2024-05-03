@@ -26,7 +26,11 @@ app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 Bootstrap5(app)
 
 # CREATE DB
-
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///movies-collection.db"
+#Optional: But it will silence the deprecation warning in the console.
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+app.app_context().push()
 
 # CREATE TABLE
 
