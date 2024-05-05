@@ -1,9 +1,13 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, SelectField
+from wtforms.validators import DataRequired, URL
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+app.secret_key= 'adsadsadasdsadsadsadsadsadsadsakjgjdskl'
 bootstrap=Bootstrap(app)
 
 # SQLAlchemy configuration
@@ -22,6 +26,11 @@ class Movie(db.Model):
     review = db.Column(db.String(250), nullable=True)
     img_url = db.Column(db.String(250), nullable=False)
 
+class MovieForm(FlaskForm):
+    rating = StringField("Your Rating Out of 10 e.g.7.5", validators=[DataRequired()])
+    review = StringField("Your Review", validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
 
 with app.app_context():
     db.create_all()
@@ -39,10 +48,24 @@ with app.app_context():
         db.session.add(new_movie)
         db.session.commit()
 
-@app.route("/")
+@app.route("/",methods=['GET','POST'])
 def home():
     movies = db.session.query(Movie).all()
     return render_template("index.html", movies=movies)
+
+
+@app.route("/update/<id>",methods=['GET','POST'])
+def update(id):
+    movie = Movie.query.filter_by(id=id).first()
+    form = MovieForm(obj=movie)
+    if form.validate_on_submit():
+        movie.rating = form.rating.data
+        print(movie.rating)
+        movie.review = form.review.data
+        db.session.commit()
+        return redirect(url_for("home"))
+    return render_template("edit.html", movie=movie, form =form)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
