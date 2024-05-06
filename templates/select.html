@@ -7,6 +7,10 @@
     <h1 class="heading">Select Movie</h1>
   <p>
     <a href="#"> MOVIE TITLE - MOVIE RELEASE DATE</a>
+    <hr>
+    {% for movie in data['results']: %}
+      <a href="#">  {{movie['title']}}- {{movie['release_date']}}</a><hr>
+    {% endfor %}
   </p>
 
 </div>

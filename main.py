@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField
 from wtforms.validators import DataRequired, URL
+import requests
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
@@ -14,6 +15,9 @@ bootstrap=Bootstrap(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///new-movies-collection.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+
+
 
 # Define Movie model
 class Movie(db.Model):
@@ -30,7 +34,9 @@ class MovieForm(FlaskForm):
     rating = StringField("Your Rating Out of 10 e.g.7.5", validators=[DataRequired()])
     review = StringField("Your Review", validators=[DataRequired()])
     submit = SubmitField('Submit')
-
+class FindMovieForm(FlaskForm):
+    title = StringField("Movie Title", validators=[DataRequired()])
+    submit = SubmitField("Add Movie")
 
 with app.app_context():
     db.create_all()
@@ -74,6 +80,27 @@ def delete(id):
 
     return redirect(url_for("home"))
 
+@app.route("/add",methods=['GET','POST'])
+def add():
+    form = FindMovieForm()
+    query = form.title.data
+    # API configuration 
+    url = "https://api.themoviedb.org/3/search/movie?query={query}&include_adult=false&language=en-US&page=1"
+
+    headers = {
+        "accept": "application/json",
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyYjJlMWMyMTdmOGY5NzdmZGY4NjdhNjkxNmFiMzQ2MSIsInN1YiI6IjY2MzgyZDZkYjc2Y2JiMDEyNjYyMmU2OCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.aE1mbVu3Qea898Xkux_ZrDp2lyjkD2kgiEyDch_9po8"
+    }
+
+    response = requests.get(url, headers=headers)
+    data = response.json()
+    print(data)
+
+
+    if form.validate_on_submit():
+         
+         return render_template("select.html", data=data)
+    return render_template("add.html", form=form)
 
 if __name__ == '__main__':
     app.run(debug=True)
