@@ -8,8 +8,8 @@
   <p>
     <a href="#"> MOVIE TITLE - MOVIE RELEASE DATE</a>
     <hr>
-    {% for movie in data['results']: %}
-      <a href="#">  {{movie['title']}}- {{movie['release_date']}}</a><hr>
+    {% for movie in data['results'] %}
+      <a href="{{url_for('get_movie_details', id = movie['id'])}}">  {{movie['title']}}- {{movie['release_date']}}</a><hr>
     {% endfor %}
   </p>
 

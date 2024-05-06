@@ -72,7 +72,7 @@ def update(id):
         return redirect(url_for("home"))
     return render_template("edit.html", movie=movie, form =form)
 
-@app.route("/<id>",methods=['GET','POST'])
+@app.route("/delete/<id>",methods=['GET','POST'])
 def delete(id):
     movie_to_delete = Movie.query.get(id)
     db.session.delete(movie_to_delete)
@@ -80,26 +80,51 @@ def delete(id):
 
     return redirect(url_for("home"))
 
-@app.route("/add",methods=['GET','POST'])
-def add():
-    form = FindMovieForm()
-    query = form.title.data
-    # API configuration 
-    url = "https://api.themoviedb.org/3/search/movie?query={query}&include_adult=false&language=en-US&page=1"
-
+@app.route("/detail/<id>",methods=['GET','POST'])
+def get_movie_details(id):
+    url = f"https://api.themoviedb.org/3/movie/{id}?language=en-US"
     headers = {
         "accept": "application/json",
         "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyYjJlMWMyMTdmOGY5NzdmZGY4NjdhNjkxNmFiMzQ2MSIsInN1YiI6IjY2MzgyZDZkYjc2Y2JiMDEyNjYyMmU2OCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.aE1mbVu3Qea898Xkux_ZrDp2lyjkD2kgiEyDch_9po8"
     }
 
     response = requests.get(url, headers=headers)
-    data = response.json()
+    data=response.json()
     print(data)
+    new_movie = Movie(
+    title=data['title'],
+    year=data['release_date'].split("-")[0],
+    description=data['overview'],
+    rating=0,
+    ranking=0,
+    review="empty",
+    img_url=f"https://image.tmdb.org/t/p/w500{data['poster_path']}"
+    )
+    db.session.add(new_movie)
+    db.session.commit()
 
+    return redirect(url_for("home"))
+
+@app.route("/add",methods=['GET','POST'])
+def add():
+    form = FindMovieForm()
 
     if form.validate_on_submit():
-         
-         return render_template("select.html", data=data)
+        # Extract the query from the form data after form submission
+        query = form.title.data
+
+        # API configuration 
+        url = f"https://api.themoviedb.org/3/search/movie?query={query}&include_adult=false&language=en-US&page=1"
+
+        headers = {
+            "accept": "application/json",
+            "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyYjJlMWMyMTdmOGY5NzdmZGY4NjdhNjkxNmFiMzQ2MSIsInN1YiI6IjY2MzgyZDZkYjc2Y2JiMDEyNjYyMmU2OCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.aE1mbVu3Qea898Xkux_ZrDp2lyjkD2kgiEyDch_9po8"
+        }
+        
+        response = requests.get(url, headers=headers)
+        data = response.json()
+        return render_template("select.html", data=data)
+    
     return render_template("add.html", form=form)
 
 if __name__ == '__main__':
