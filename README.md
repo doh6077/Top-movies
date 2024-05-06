@@ -3,6 +3,8 @@
 This project is designed to help users manage their movie collections effortlessly. 
 It enables users to perform actions like viewing, adding, updating, and deleting movies from their personal collection.
 
+<img src="https://github.com/doh6077/Top-movies/assets/134092191/df5dba7c-b8ca-4513-9d00-6e769c22fcc5">
+
 ## Key Features 🌟
 
 - **Browse Movies**: Users can easily browse through their curated list of top 10 favorite movies, accessing detailed information such as title, release year, rating, review, and description.
