@@ -3,7 +3,7 @@
 This project is designed to help users manage their movie collections effortlessly. 
 It enables users to perform actions like viewing, adding, updating, and deleting movies from their personal collection.
 
-<img src="https://github.com/doh6077/Top-movies/assets/134092191/25b7a705-e03d-4398-9d64-c046f587acc7">
+<img src="https://github.com/doh6077/Top-movies/assets/134092191/1071ce99-df76-4cd5-b008-8e2c9e463563">
 
 ## Key Features 🌟
 
