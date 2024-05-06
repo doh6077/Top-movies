@@ -66,6 +66,7 @@ def home():
     return render_template("index.html", movies=all_movies)
 
 
+
 @app.route("/update/<id>",methods=['GET','POST'])
 def update(id):
     movie = Movie.query.filter_by(id=id).first()
