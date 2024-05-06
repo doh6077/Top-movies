@@ -63,10 +63,10 @@ def home():
 @app.route("/update/<id>",methods=['GET','POST'])
 def update(id):
     movie = Movie.query.filter_by(id=id).first()
+    print(f"This is movie info{movie}")
     form = MovieForm(obj=movie)
     if form.validate_on_submit():
         movie.rating = form.rating.data
-        print(movie.rating)
         movie.review = form.review.data
         db.session.commit()
         return redirect(url_for("home"))
@@ -80,9 +80,9 @@ def delete(id):
 
     return redirect(url_for("home"))
 
-@app.route("/detail/<id>",methods=['GET','POST'])
-def get_movie_details(id):
-    url = f"https://api.themoviedb.org/3/movie/{id}?language=en-US"
+@app.route("/detail/<movie_id>",methods=['GET','POST'])
+def get_movie_details(movie_id):
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}?language=en-US"
     headers = {
         "accept": "application/json",
         "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyYjJlMWMyMTdmOGY5NzdmZGY4NjdhNjkxNmFiMzQ2MSIsInN1YiI6IjY2MzgyZDZkYjc2Y2JiMDEyNjYyMmU2OCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.aE1mbVu3Qea898Xkux_ZrDp2lyjkD2kgiEyDch_9po8"
@@ -92,18 +92,19 @@ def get_movie_details(id):
     data=response.json()
     print(data)
     new_movie = Movie(
-    title=data['title'],
-    year=data['release_date'].split("-")[0],
-    description=data['overview'],
-    rating=0,
-    ranking=0,
-    review="empty",
-    img_url=f"https://image.tmdb.org/t/p/w500{data['poster_path']}"
+        title=data['title'],
+        year=data['release_date'].split("-")[0],
+        description=data['overview'],
+        rating=None,
+        ranking=None,
+        review="None",
+        img_url=f"https://image.tmdb.org/t/p/w500{data['poster_path']}"
     )
     db.session.add(new_movie)
     db.session.commit()
+    movie = Movie.query.filter_by(title=data['title']).first()
 
-    return redirect(url_for("home"))
+    return redirect(url_for("update", id=movie.id))
 
 @app.route("/add",methods=['GET','POST'])
 def add():
