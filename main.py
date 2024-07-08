@@ -5,10 +5,11 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField
 from wtforms.validators import DataRequired, URL
 import requests
+import os 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
-app.secret_key= 'adsadsadasdsadsadsadsadsadsadsakjgjdskl'
+app.config['SECRET_KEY'] = os.environ.get('FLASK_KEY')
+app.secret_key= os.environ.get('SECRET_KEY')
 bootstrap=Bootstrap(app)
 
 # SQLAlchemy configuration
