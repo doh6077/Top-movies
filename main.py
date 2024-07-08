@@ -131,7 +131,7 @@ def add():
         }
         
         response = requests.get(url, headers=headers)
-        data = response.json()
+        data = response.json()["results"]
         return render_template("select.html", data=data)
     
     return render_template("add.html", form=form)
