@@ -13,7 +13,7 @@ app.secret_key= os.environ.get('SECRET_KEY')
 bootstrap=Bootstrap(app)
 
 # SQLAlchemy configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///new-movies-collection.db"
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DB_URI", "sqlite:///move-collection.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
