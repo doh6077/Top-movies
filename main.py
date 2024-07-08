@@ -9,7 +9,6 @@ import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('FLASK_KEY')
-#app.secret_key= os.environ.get('SECRET_KEY')
 bootstrap=Bootstrap(app)
 
 # SQLAlchemy configuration
@@ -17,7 +16,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DB_URI", "sqlite:///move
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-
+MOVIE_DB_API_KEY = os.environ.get('MOVIE_DB_API_KEY')
+MOVIE_DB_SEARCH_URL = "https://api.themoviedb.org/3/search/movie"
+MOVIE_DB_INFO_URL = "https://api.themoviedb.org/3/movie"
+MOVIE_DB_IMAGE_URL = "https://image.tmdb.org/t/p/w500"
 
 
 # Define Movie model
@@ -31,7 +33,7 @@ class Movie(db.Model):
     review = db.Column(db.String(250), nullable=True)
     img_url = db.Column(db.String(250), nullable=False)
 
-class MovieForm(FlaskForm):
+class RateMovieForm(FlaskForm):
     rating = StringField("Your Rating Out of 10 e.g.7.5", validators=[DataRequired()])
     review = StringField("Your Review", validators=[DataRequired()])
     submit = SubmitField('Submit')
@@ -71,8 +73,7 @@ def home():
 @app.route("/update/<id>",methods=['GET','POST'])
 def update(id):
     movie = Movie.query.filter_by(id=id).first()
-    print(f"This is movie info{movie}")
-    form = MovieForm(obj=movie)
+    form = RateMovieForm(obj=movie)
     if form.validate_on_submit():
         movie.rating = form.rating.data
         movie.review = form.review.data
@@ -119,22 +120,12 @@ def add():
     form = FindMovieForm()
 
     if form.validate_on_submit():
-        # Extract the query from the form data after form submission
-        query = form.title.data
-
-        # API configuration 
-        url = f"https://api.themoviedb.org/3/search/movie?query={query}&include_adult=false&language=en-US&page=1"
-
-        headers = {
-            "accept": "application/json",
-            "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyYjJlMWMyMTdmOGY5NzdmZGY4NjdhNjkxNmFiMzQ2MSIsInN1YiI6IjY2MzgyZDZkYjc2Y2JiMDEyNjYyMmU2OCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.aE1mbVu3Qea898Xkux_ZrDp2lyjkD2kgiEyDch_9po8"
-        }
-        
-        response = requests.get(url, headers=headers)
+        movie_title = form.title.data
+        response = requests.get(MOVIE_DB_SEARCH_URL, params={"api_key": MOVIE_DB_API_KEY, "query": movie_title})
         data = response.json()["results"]
-        return render_template("select.html", data=data)
+        return render_template("select.html", options=data)
     
     return render_template("add.html", form=form)
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
