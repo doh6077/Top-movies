@@ -57,4 +57,6 @@ This application leverages the [Movie Database (TMDb) API](https://www.themovied
 - For existing entries, users have the option to update movie details, including ratings and reviews, by clicking the "Update" button adjacent to the respective movie.
 - To declutter the collection, users can effortlessly delete unwanted movies by clicking the "Delete" button associated with each movie entry.
 
-
+## Deployment
+-  Updated on 09 July 2024
+-  The website is deployed and hosted on Render. You can access the live website at https://top-movies-vaol.onrender.com/
